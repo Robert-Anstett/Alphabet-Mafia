@@ -1,0 +1,655 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\rober\OneDrive\Documents\AlphabetMafiaLogFileReplication.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}11 Nov 2024, 06:36:07
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. import excel "C:\Users\rober\OneDrive\Documents\IG_Paper\RD_GIGP.xlsx", firstrow
+{res}{text}(25 vars, 3,562 obs)
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. drop if ProGay == "."
+{txt}(22 observations deleted)
+
+{com}. drop if Party == "."
+{txt}(4 observations deleted)
+
+{com}. destring, replace
+{txt}Congressperson: contains nonnumeric characters; no {res}replace
+{txt}Party: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(5 missing values generated)
+{res}{txt}State: contains nonnumeric characters; no {res}replace
+{txt}Vote: contains nonnumeric characters; no {res}replace
+{txt}ProGay: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(9 missing values generated)
+{res}{txt}Year already numeric; no {res}replace
+{txt}Bill: contains nonnumeric characters; no {res}replace
+{txt}Chamber already numeric; no {res}replace
+{txt}Congress already numeric; no {res}replace
+{txt}ControlofChamber: contains nonnumeric characters; no {res}replace
+{txt}LeadershipChair already numeric; no {res}replace
+{txt}CommitteeMembers already numeric; no {res}replace
+{txt}LGBTQMember already numeric; no {res}replace
+{txt}id already numeric; no {res}replace
+{txt}RestofName: contains nonnumeric characters; no {res}replace
+{txt}DW already numeric; no {res}replace
+{txt}FirstNameState: contains nonnumeric characters; no {res}replace
+{txt}UnadjustedDonos already numeric; no {res}replace
+{txt}DonationsInflation already numeric; no {res}replace
+{txt}OUTLGBT already numeric; no {res}replace
+{txt}_merge: contains nonnumeric characters; no {res}replace
+{txt}Gender already numeric; no {res}replace
+{txt}Race already numeric; no {res}replace
+{txt}AfricanAmerican already numeric; no {res}replace
+{txt}Hispanic already numeric; no {res}replace
+{txt}
+{com}. 
+. gen DonoII = round(DonationsInflation)
+{txt}
+{com}. gen DonoIII = DonoII/10000
+{txt}
+{com}. 
+. egen billDestring=group(Bill)
+{txt}
+{com}. 
+. label define billDestring 1 "Defense of Marriage Act" 2 "Department of Defense Authorization Act for FY 1994" 3 "Don't Ask Don't Tell Repeal act of 2010" 4 "Employment Non-Discrimination Act of 2013" 5 "Equality Act" 6 "Global Respect Act" 7 "Local Law Enforcement Hate Crimes Prevention Act 2009 (Shepard/Byrd)" 8 "Matthew Shepard and James Byrd Jr hate Crimes Prevention Act (Senate Cloture)" 9 "Respect for Marriage Act"
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. tab LGBTQMember
+
+{txt}LGBTQMember {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}      3,485       98.56       98.56
+{txt}          1 {c |}{res}         51        1.44      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}      3,536      100.00
+{txt}
+{com}. *** Out of a N of 3536, only 51 votes were from LGBTQ Members of Congress (1.43%)
+. 
+. tab OUTLGBT
+
+    {txt}OUTLGBT {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}      3,495       98.84       98.84
+{txt}          1 {c |}{res}         41        1.16      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}      3,536      100.00
+{txt}
+{com}. *** Out of a N of 3536, only 41 votes were from OPENLY LGBTQ Members of Congress (1.15%)
+. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. reg ProGay DonoIII Party DW OUTLGBT Gender Race i.billDestring if Year <=2018, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     2,139
+{txt}{hline 13}{c +}{hline 34}   F(11, 2127)     = {res}   106.01
+{txt}       Model {c |} {res} 185.712069        11  16.8829154   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 338.728323     2,127   .15925168   {txt}R-squared       ={res}    0.3541
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3508
+{txt}       Total {c |} {res} 524.440393     2,138  .245294852   {txt}Root MSE        =   {res} .39906
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      ProGay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}DonoIII {c |}{col 14}{res}{space 2} .0742215{col 26}{space 2} .0178342{col 37}{space 1}    4.16{col 46}{space 3}0.000{col 67}{space 3} .0784065
+{txt}{space 7}Party {c |}{col 14}{res}{space 2}-.0954029{col 26}{space 2} .0428448{col 37}{space 1}   -2.23{col 46}{space 3}0.026{col 67}{space 3}-.0958205
+{txt}{space 10}DW {c |}{col 14}{res}{space 2}-.5828316{col 26}{space 2} .0546079{col 37}{space 1}  -10.67{col 46}{space 3}0.000{col 67}{space 3}-.4740096
+{txt}{space 5}OUTLGBT {c |}{col 14}{res}{space 2} .1124094{col 26}{space 2} .1171345{col 37}{space 1}    0.96{col 46}{space 3}0.337{col 67}{space 3}  .016956
+{txt}{space 6}Gender {c |}{col 14}{res}{space 2} .0886882{col 26}{space 2}  .025807{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 67}{space 3} .0621093
+{txt}{space 8}Race {c |}{col 14}{res}{space 2} .0355456{col 26}{space 2} .0281506{col 37}{space 1}    1.26{col 46}{space 3}0.207{col 67}{space 3} .0238029
+{txt}{space 12} {c |}
+billDestring {c |}
+{space 10}2  {c |}{col 14}{res}{space 2} .1159704{col 26}{space 2} .0252099{col 37}{space 1}    4.60{col 46}{space 3}0.000{col 67}{space 3} .0995318
+{txt}{space 10}3  {c |}{col 14}{res}{space 2} .4076873{col 26}{space 2} .0251314{col 37}{space 1}   16.22{col 46}{space 3}0.000{col 67}{space 3} .3529514
+{txt}{space 10}4  {c |}{col 14}{res}{space 2} .4826866{col 26}{space 2}  .045009{col 37}{space 1}   10.72{col 46}{space 3}0.000{col 67}{space 3} .1998124
+{txt}{space 10}7  {c |}{col 14}{res}{space 2} .3930674{col 26}{space 2}   .02648{col 37}{space 1}   14.84{col 46}{space 3}0.000{col 67}{space 3} .3164671
+{txt}{space 10}8  {c |}{col 14}{res}{space 2} .4928754{col 26}{space 2} .0461586{col 37}{space 1}   10.68{col 46}{space 3}0.000{col 67}{space 3} .1987722
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .2025429{col 26}{space 2} .0291524{col 37}{space 1}    6.95{col 46}{space 3}0.000{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetMafia.doc
+{txt}{stata `"shellout using `"AlphabetMafia.doc"'"':AlphabetMafia.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetMafia.txt""':seeout}
+
+{com}. 
+. reg ProGay DonoIII Party DW OUTLGBT Gender Race i.billDestring if Year >=2018, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,380
+{txt}{hline 13}{c +}{hline 34}   F(8, 1371)      = {res}   925.76
+{txt}       Model {c |} {res} 286.482078         8  35.8102598   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 53.0331393     1,371  .038682086   {txt}R-squared       ={res}    0.8438
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.8429
+{txt}       Total {c |} {res} 339.515217     1,379  .246203928   {txt}Root MSE        =   {res} .19668
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      ProGay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}DonoIII {c |}{col 14}{res}{space 2} .0020121{col 26}{space 2} .0062518{col 37}{space 1}    0.32{col 46}{space 3}0.748{col 67}{space 3} .0043582
+{txt}{space 7}Party {c |}{col 14}{res}{space 2}  .527681{col 26}{space 2} .0359094{col 37}{space 1}   14.69{col 46}{space 3}0.000{col 67}{space 3} .5317245
+{txt}{space 10}DW {c |}{col 14}{res}{space 2}-.4203906{col 26}{space 2} .0394724{col 37}{space 1}  -10.65{col 46}{space 3}0.000{col 67}{space 3}-.3917382
+{txt}{space 5}OUTLGBT {c |}{col 14}{res}{space 2} .0019661{col 26}{space 2}  .045316{col 37}{space 1}    0.04{col 46}{space 3}0.965{col 67}{space 3} .0005685
+{txt}{space 6}Gender {c |}{col 14}{res}{space 2} .0064326{col 26}{space 2} .0125631{col 37}{space 1}    0.51{col 46}{space 3}0.609{col 67}{space 3} .0057836
+{txt}{space 8}Race {c |}{col 14}{res}{space 2}-.0093137{col 26}{space 2} .0134913{col 37}{space 1}   -0.69{col 46}{space 3}0.490{col 67}{space 3}-.0082747
+{txt}{space 12} {c |}
+billDestring {c |}
+{space 10}6  {c |}{col 14}{res}{space 2} .0078403{col 26}{space 2} .0133983{col 37}{space 1}    0.59{col 46}{space 3}0.559{col 67}{space 3} .0073301
+{txt}{space 10}9  {c |}{col 14}{res}{space 2} .1100786{col 26}{space 2} .0128394{col 37}{space 1}    8.57{col 46}{space 3}0.000{col 67}{space 3} .1074613
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}  .270522{col 26}{space 2} .0231249{col 37}{space 1}   11.70{col 46}{space 3}0.000{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetMafia.doc
+{txt}{stata `"shellout using `"AlphabetMafia.doc"'"':AlphabetMafia.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetMafia.txt""':seeout}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. clear
+{txt}
+{com}. ssc install catplot
+{txt}checking {hilite:catplot} consistency and verifying not already installed...
+all files already exist and are up to date.
+
+{com}. 
+. import excel "C:\Users\rober\OneDrive\Documents\IG_Paper\RD_GIGP.xlsx", firstrow
+{res}{text}(25 vars, 3,562 obs)
+
+{com}. 
+. drop if ProGay == "."
+{txt}(22 observations deleted)
+
+{com}. drop if Party == "."
+{txt}(4 observations deleted)
+
+{com}. destring, replace
+{txt}Congressperson: contains nonnumeric characters; no {res}replace
+{txt}Party: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(5 missing values generated)
+{res}{txt}State: contains nonnumeric characters; no {res}replace
+{txt}Vote: contains nonnumeric characters; no {res}replace
+{txt}ProGay: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(9 missing values generated)
+{res}{txt}Year already numeric; no {res}replace
+{txt}Bill: contains nonnumeric characters; no {res}replace
+{txt}Chamber already numeric; no {res}replace
+{txt}Congress already numeric; no {res}replace
+{txt}ControlofChamber: contains nonnumeric characters; no {res}replace
+{txt}LeadershipChair already numeric; no {res}replace
+{txt}CommitteeMembers already numeric; no {res}replace
+{txt}LGBTQMember already numeric; no {res}replace
+{txt}id already numeric; no {res}replace
+{txt}RestofName: contains nonnumeric characters; no {res}replace
+{txt}DW already numeric; no {res}replace
+{txt}FirstNameState: contains nonnumeric characters; no {res}replace
+{txt}UnadjustedDonos already numeric; no {res}replace
+{txt}DonationsInflation already numeric; no {res}replace
+{txt}OUTLGBT already numeric; no {res}replace
+{txt}_merge: contains nonnumeric characters; no {res}replace
+{txt}Gender already numeric; no {res}replace
+{txt}Race already numeric; no {res}replace
+{txt}AfricanAmerican already numeric; no {res}replace
+{txt}Hispanic already numeric; no {res}replace
+{txt}
+{com}. 
+. egen billDestring=group(Bill)
+{txt}
+{com}. 
+. label define billDestring 1 "Defense of Marriage Act" 2 "Department of Defense Authorization Act for FY 1994" 3 "Don't Ask Don't Tell Repeal act of 2010" 4 "Employment Non-Discrimination Act of 2013" 5 "Equality Act" 6 "Global Respect Act" 7 "Local Law Enforcement Hate Crimes Prevention Act 2009 (Shepard/Byrd)" 8 "Matthew Shepard and James Byrd Jr hate Crimes Prevention Act (Senate Cloture)" 9 "Respect for Marriage Act"
+{txt}
+{com}. 
+. gen year2 = Year
+{txt}
+{com}. replace year2 = 2009.1 if billDestring == 7
+{txt}(424 real changes made)
+
+{com}. replace year2 = 2009.2 if billDestring == 8
+{txt}(89 real changes made)
+
+{com}. replace year2 = 2022.1 if billDestring == 9
+{txt}(526 real changes made)
+
+{com}. replace year2 = 2022.2 if billDestring == 6
+{txt}(433 real changes made)
+
+{com}. 
+. 
+. label define ProGay 0 "Anti" 1 "Pro"
+{txt}
+{com}. label values ProGay ProGay
+{txt}
+{com}. label define Party 0 "Republican" 1 "Democrat"
+{txt}
+{com}. label values Party Party
+{txt}
+{com}. 
+. 
+. catplot, over(Party) over(ProGay) over(year2) stack ytitle("Vote Total") bar(1, color(203 24 29)) bar(2, color(8 81 156)) graphregion(color(white))
+{res}{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. clear
+{txt}
+{com}. import excel "C:\Users\rober\OneDrive\Documents\IG_Paper\RD_GIGP.xlsx", firstrow
+{res}{text}(25 vars, 3,562 obs)
+
+{com}. 
+. drop if ProGay == "."
+{txt}(22 observations deleted)
+
+{com}. drop if Party == "."
+{txt}(4 observations deleted)
+
+{com}. destring, replace
+{txt}Congressperson: contains nonnumeric characters; no {res}replace
+{txt}Party: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(5 missing values generated)
+{res}{txt}State: contains nonnumeric characters; no {res}replace
+{txt}Vote: contains nonnumeric characters; no {res}replace
+{txt}ProGay: all characters numeric; {res}replaced {txt}as {res}byte
+{txt}(9 missing values generated)
+{res}{txt}Year already numeric; no {res}replace
+{txt}Bill: contains nonnumeric characters; no {res}replace
+{txt}Chamber already numeric; no {res}replace
+{txt}Congress already numeric; no {res}replace
+{txt}ControlofChamber: contains nonnumeric characters; no {res}replace
+{txt}LeadershipChair already numeric; no {res}replace
+{txt}CommitteeMembers already numeric; no {res}replace
+{txt}LGBTQMember already numeric; no {res}replace
+{txt}id already numeric; no {res}replace
+{txt}RestofName: contains nonnumeric characters; no {res}replace
+{txt}DW already numeric; no {res}replace
+{txt}FirstNameState: contains nonnumeric characters; no {res}replace
+{txt}UnadjustedDonos already numeric; no {res}replace
+{txt}DonationsInflation already numeric; no {res}replace
+{txt}OUTLGBT already numeric; no {res}replace
+{txt}_merge: contains nonnumeric characters; no {res}replace
+{txt}Gender already numeric; no {res}replace
+{txt}Race already numeric; no {res}replace
+{txt}AfricanAmerican already numeric; no {res}replace
+{txt}Hispanic already numeric; no {res}replace
+{txt}
+{com}. 
+. gen DonoII = round(DonationsInflation)
+{txt}
+{com}. gen DonoIII = DonoII/10000
+{txt}
+{com}. egen billDestring=group(Bill)
+{txt}
+{com}. label define billDestring 1 "Defense of Marriage Act" 2 "Department of Defense Authorization Act for FY 1994" 3 "Don't Ask Don't Tell Repeal act of 2010" 4 "Employment Non-Discrimination Act of 2013" 5 "Equality Act" 6 "Global Respect Act" 7 "Local Law Enforcement Hate Crimes Prevention Act 2009 (Shepard/Byrd)" 8 "Matthew Shepard and James Byrd Jr hate Crimes Prevention Act (Senate Cloture)" 9 "Respect for Marriage Act"
+{txt}
+{com}. 
+. reg ProGay DonoIII Party DW OUTLGBT LeadershipChair CommitteeMembers Gender Race i.billDestring, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     3,519
+{txt}{hline 13}{c +}{hline 34}   F(16, 3502)     = {res}   226.76
+{txt}       Model {c |} {res} 447.111848        16  27.9444905   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 431.563344     3,502  .123233393   {txt}R-squared       ={res}    0.5088
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.5066
+{txt}       Total {c |} {res} 878.675192     3,518  .249765546   {txt}Root MSE        =   {res} .35105
+
+{txt}{hline 17}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}          ProGay{col 18}{c |}      Coef.{col 30}   Std. Err.{col 42}      t{col 50}   P>|t|{col 71}        Beta
+{hline 17}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}DonoIII {c |}{col 18}{res}{space 2} .0330649{col 30}{space 2} .0088076{col 41}{space 1}    3.75{col 50}{space 3}0.000{col 71}{space 3} .0521583
+{txt}{space 11}Party {c |}{col 18}{res}{space 2} .0076795{col 30}{space 2} .0323297{col 41}{space 1}    0.24{col 50}{space 3}0.812{col 71}{space 3} .0076633
+{txt}{space 14}DW {c |}{col 18}{res}{space 2}-.6842625{col 30}{space 2} .0387272{col 41}{space 1}  -17.67{col 50}{space 3}0.000{col 71}{space 3}-.5859076
+{txt}{space 9}OUTLGBT {c |}{col 18}{res}{space 2} .0246203{col 30}{space 2} .0623369{col 41}{space 1}    0.39{col 50}{space 3}0.693{col 71}{space 3} .0052872
+{txt}{space 1}LeadershipChair {c |}{col 18}{res}{space 2}-.0446364{col 30}{space 2} .0422574{col 41}{space 1}   -1.06{col 50}{space 3}0.291{col 71}{space 3}-.0125597
+{txt}CommitteeMembers {c |}{col 18}{res}{space 2} .0120673{col 30}{space 2} .0195851{col 41}{space 1}    0.62{col 50}{space 3}0.538{col 71}{space 3}  .007381
+{txt}{space 10}Gender {c |}{col 18}{res}{space 2}  .063802{col 30}{space 2} .0159174{col 41}{space 1}    4.01{col 50}{space 3}0.000{col 71}{space 3} .0503288
+{txt}{space 12}Race {c |}{col 18}{res}{space 2} .0236372{col 30}{space 2} .0171603{col 41}{space 1}    1.38{col 50}{space 3}0.168{col 71}{space 3} .0181686
+{txt}{space 16} {c |}
+{space 4}billDestring {c |}
+{space 14}2  {c |}{col 18}{res}{space 2} .0922009{col 30}{space 2} .0221437{col 41}{space 1}    4.16{col 50}{space 3}0.000{col 71}{space 3}  .064742
+{txt}{space 14}3  {c |}{col 18}{res}{space 2} .3888458{col 30}{space 2}  .022146{col 41}{space 1}   17.56{col 50}{space 3}0.000{col 71}{space 3} .2759293
+{txt}{space 14}4  {c |}{col 18}{res}{space 2} .4754265{col 30}{space 2} .0396534{col 41}{space 1}   11.99{col 50}{space 3}0.000{col 71}{space 3}   .15341
+{txt}{space 14}5  {c |}{col 18}{res}{space 2} .3407138{col 30}{space 2} .0234196{col 41}{space 1}   14.55{col 50}{space 3}0.000{col 71}{space 3} .2233105
+{txt}{space 14}6  {c |}{col 18}{res}{space 2} .3486328{col 30}{space 2} .0234121{col 41}{space 1}   14.89{col 50}{space 3}0.000{col 71}{space 3} .2289574
+{txt}{space 14}7  {c |}{col 18}{res}{space 2} .3760996{col 30}{space 2} .0232301{col 41}{space 1}   16.19{col 50}{space 3}0.000{col 71}{space 3} .2450148
+{txt}{space 14}8  {c |}{col 18}{res}{space 2} .4655416{col 30}{space 2} .0405215{col 41}{space 1}   11.49{col 50}{space 3}0.000{col 71}{space 3} .1462772
+{txt}{space 14}9  {c |}{col 18}{res}{space 2} .4538853{col 30}{space 2}  .022334{col 41}{space 1}   20.32{col 50}{space 3}0.000{col 71}{space 3} .3218253
+{txt}{space 16} {c |}
+{space 11}_cons {c |}{col 18}{res}{space 2} .1746156{col 30}{space 2} .0230659{col 41}{space 1}    7.57{col 50}{space 3}0.000{col 71}{space 3}        .
+{txt}{hline 17}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetAppendix.doc
+{txt}{stata `"shellout using `"AlphabetAppendix.doc"'"':AlphabetAppendix.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetAppendix.txt""':seeout}
+
+{com}. 
+. reg ProGay DonoIII Party DW OUTLGBT LeadershipChair CommitteeMembers Gender Race i.billDestring if Year <=2018, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     2,139
+{txt}{hline 13}{c +}{hline 34}   F(13, 2125)     = {res}    89.68
+{txt}       Model {c |} {res} 185.798041        13   14.292157   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 338.642352     2,125  .159361107   {txt}R-squared       ={res}    0.3543
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.3503
+{txt}       Total {c |} {res} 524.440393     2,138  .245294852   {txt}Root MSE        =   {res}  .3992
+
+{txt}{hline 17}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}          ProGay{col 18}{c |}      Coef.{col 30}   Std. Err.{col 42}      t{col 50}   P>|t|{col 71}        Beta
+{hline 17}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}DonoIII {c |}{col 18}{res}{space 2}  .074599{col 30}{space 2} .0178491{col 41}{space 1}    4.18{col 50}{space 3}0.000{col 71}{space 3} .0788053
+{txt}{space 11}Party {c |}{col 18}{res}{space 2}-.0956484{col 30}{space 2} .0428989{col 41}{space 1}   -2.23{col 50}{space 3}0.026{col 71}{space 3}-.0960671
+{txt}{space 14}DW {c |}{col 18}{res}{space 2}-.5831727{col 30}{space 2} .0546983{col 41}{space 1}  -10.66{col 50}{space 3}0.000{col 71}{space 3} -.474287
+{txt}{space 9}OUTLGBT {c |}{col 18}{res}{space 2} .1115336{col 30}{space 2} .1173901{col 41}{space 1}    0.95{col 50}{space 3}0.342{col 71}{space 3} .0168239
+{txt}{space 1}LeadershipChair {c |}{col 18}{res}{space 2}-.0425768{col 30}{space 2} .0584344{col 41}{space 1}   -0.73{col 50}{space 3}0.466{col 71}{space 3}-.0127355
+{txt}CommitteeMembers {c |}{col 18}{res}{space 2}-.0022991{col 30}{space 2} .0283349{col 41}{space 1}   -0.08{col 50}{space 3}0.935{col 71}{space 3}-.0014383
+{txt}{space 10}Gender {c |}{col 18}{res}{space 2} .0879485{col 30}{space 2} .0258387{col 41}{space 1}    3.40{col 50}{space 3}0.001{col 71}{space 3} .0615913
+{txt}{space 12}Race {c |}{col 18}{res}{space 2} .0354491{col 30}{space 2} .0281613{col 41}{space 1}    1.26{col 50}{space 3}0.208{col 71}{space 3} .0237383
+{txt}{space 16} {c |}
+{space 4}billDestring {c |}
+{space 14}2  {c |}{col 18}{res}{space 2} .1161564{col 30}{space 2} .0252476{col 41}{space 1}    4.60{col 50}{space 3}0.000{col 71}{space 3} .0996915
+{txt}{space 14}3  {c |}{col 18}{res}{space 2} .4082196{col 30}{space 2} .0253271{col 41}{space 1}   16.12{col 50}{space 3}0.000{col 71}{space 3} .3534122
+{txt}{space 14}4  {c |}{col 18}{res}{space 2}  .484526{col 30}{space 2} .0452556{col 41}{space 1}   10.71{col 50}{space 3}0.000{col 71}{space 3} .2005738
+{txt}{space 14}7  {c |}{col 18}{res}{space 2} .3930267{col 30}{space 2} .0264934{col 41}{space 1}   14.83{col 50}{space 3}0.000{col 71}{space 3} .3164343
+{txt}{space 14}8  {c |}{col 18}{res}{space 2} .4929197{col 30}{space 2} .0462121{col 41}{space 1}   10.67{col 50}{space 3}0.000{col 71}{space 3}   .19879
+{txt}{space 16} {c |}
+{space 11}_cons {c |}{col 18}{res}{space 2} .2036712{col 30}{space 2} .0292092{col 41}{space 1}    6.97{col 50}{space 3}0.000{col 71}{space 3}        .
+{txt}{hline 17}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetAppendix.doc
+{txt}{stata `"shellout using `"AlphabetAppendix.doc"'"':AlphabetAppendix.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetAppendix.txt""':seeout}
+
+{com}. 
+. reg ProGay DonoIII Party DW OUTLGBT LeadershipChair CommitteeMembers Gender Race i.billDestring if Year >=2018, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,380
+{txt}{hline 13}{c +}{hline 34}   F(10, 1369)     = {res}   740.75
+{txt}       Model {c |} {res} 286.555763        10  28.6555763   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 52.9594541     1,369  .038684773   {txt}R-squared       ={res}    0.8440
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.8429
+{txt}       Total {c |} {res} 339.515217     1,379  .246203928   {txt}Root MSE        =   {res} .19668
+
+{txt}{hline 17}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}          ProGay{col 18}{c |}      Coef.{col 30}   Std. Err.{col 42}      t{col 50}   P>|t|{col 71}        Beta
+{hline 17}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 9}DonoIII {c |}{col 18}{res}{space 2} .0022645{col 30}{space 2} .0062671{col 41}{space 1}    0.36{col 50}{space 3}0.718{col 71}{space 3} .0049047
+{txt}{space 11}Party {c |}{col 18}{res}{space 2} .5240311{col 30}{space 2} .0360289{col 41}{space 1}   14.54{col 50}{space 3}0.000{col 71}{space 3} .5280466
+{txt}{space 14}DW {c |}{col 18}{res}{space 2}-.4248194{col 30}{space 2} .0396315{col 41}{space 1}  -10.72{col 50}{space 3}0.000{col 71}{space 3}-.3958652
+{txt}{space 9}OUTLGBT {c |}{col 18}{res}{space 2}-.0010489{col 30}{space 2} .0453963{col 41}{space 1}   -0.02{col 50}{space 3}0.982{col 71}{space 3}-.0003033
+{txt}{space 1}LeadershipChair {c |}{col 18}{res}{space 2}-.0368659{col 30}{space 2}  .041699{col 41}{space 1}   -0.88{col 50}{space 3}0.377{col 71}{space 3} -.009515
+{txt}CommitteeMembers {c |}{col 18}{res}{space 2} .0196835{col 30}{space 2}  .017796{col 41}{space 1}    1.11{col 50}{space 3}0.269{col 71}{space 3} .0118667
+{txt}{space 10}Gender {c |}{col 18}{res}{space 2} .0056978{col 30}{space 2} .0125863{col 41}{space 1}    0.45{col 50}{space 3}0.651{col 71}{space 3} .0051229
+{txt}{space 12}Race {c |}{col 18}{res}{space 2}-.0100223{col 30}{space 2} .0135072{col 41}{space 1}   -0.74{col 50}{space 3}0.458{col 71}{space 3}-.0089042
+{txt}{space 16} {c |}
+{space 4}billDestring {c |}
+{space 14}6  {c |}{col 18}{res}{space 2}  .007587{col 30}{space 2} .0134008{col 41}{space 1}    0.57{col 50}{space 3}0.571{col 71}{space 3} .0070932
+{txt}{space 14}9  {c |}{col 18}{res}{space 2} .1105082{col 30}{space 2} .0128446{col 41}{space 1}    8.60{col 50}{space 3}0.000{col 71}{space 3} .1078808
+{txt}{space 16} {c |}
+{space 11}_cons {c |}{col 18}{res}{space 2} .2715824{col 30}{space 2} .0232491{col 41}{space 1}   11.68{col 50}{space 3}0.000{col 71}{space 3}        .
+{txt}{hline 17}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetAppendix.doc
+{txt}{stata `"shellout using `"AlphabetAppendix.doc"'"':AlphabetAppendix.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetAppendix.txt""':seeout}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. 
+. drop if Year == 1993
+{txt}(507 observations deleted)
+
+{com}. 
+. reg ProGay DonoII Party DW OUTLGBT Gender Race i.billDestring, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     3,013
+{txt}{hline 13}{c +}{hline 34}   F(13, 2999)     = {res}   670.25
+{txt}       Model {c |} {res} 560.080889        13  43.0831453   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 192.774073     2,999  .064279451   {txt}R-squared       ={res}    0.7439
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.7428
+{txt}       Total {c |} {res} 752.854962     3,012  .249951847   {txt}Root MSE        =   {res} .25353
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      ProGay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}DonoII {c |}{col 14}{res}{space 2} 2.43e-06{col 26}{space 2} 6.61e-07{col 37}{space 1}    3.68{col 46}{space 3}0.000{col 67}{space 3}    .0403
+{txt}{space 7}Party {c |}{col 14}{res}{space 2} .2699994{col 26}{space 2} .0273983{col 37}{space 1}    9.85{col 46}{space 3}0.000{col 67}{space 3} .2695825
+{txt}{space 10}DW {c |}{col 14}{res}{space 2}-.5872595{col 26}{space 2}  .032181{col 37}{space 1}  -18.25{col 46}{space 3}0.000{col 67}{space 3}-.5116086
+{txt}{space 5}OUTLGBT {c |}{col 14}{res}{space 2} .0119199{col 26}{space 2} .0466768{col 37}{space 1}    0.26{col 46}{space 3}0.798{col 67}{space 3} .0026954
+{txt}{space 6}Gender {c |}{col 14}{res}{space 2} .0504408{col 26}{space 2} .0120307{col 37}{space 1}    4.19{col 46}{space 3}0.000{col 67}{space 3} .0409875
+{txt}{space 8}Race {c |}{col 14}{res}{space 2} .0180916{col 26}{space 2} .0131813{col 37}{space 1}    1.37{col 46}{space 3}0.170{col 67}{space 3} .0142129
+{txt}{space 12} {c |}
+billDestring {c |}
+{space 10}3  {c |}{col 14}{res}{space 2} .3626491{col 26}{space 2} .0159505{col 37}{space 1}   22.74{col 46}{space 3}0.000{col 67}{space 3}  .273945
+{txt}{space 10}4  {c |}{col 14}{res}{space 2} .4561411{col 26}{space 2} .0285622{col 37}{space 1}   15.97{col 46}{space 3}0.000{col 67}{space 3} .1586445
+{txt}{space 10}5  {c |}{col 14}{res}{space 2} .3296637{col 26}{space 2} .0169612{col 37}{space 1}   19.44{col 46}{space 3}0.000{col 67}{space 3} .2306813
+{txt}{space 10}6  {c |}{col 14}{res}{space 2} .3378449{col 26}{space 2} .0169534{col 37}{space 1}   19.93{col 46}{space 3}0.000{col 67}{space 3} .2368634
+{txt}{space 10}7  {c |}{col 14}{res}{space 2} .3494502{col 26}{space 2} .0168044{col 37}{space 1}   20.80{col 46}{space 3}0.000{col 67}{space 3} .2430967
+{txt}{space 10}8  {c |}{col 14}{res}{space 2} .4267804{col 26}{space 2} .0292799{col 37}{space 1}   14.58{col 46}{space 3}0.000{col 67}{space 3} .1445549
+{txt}{space 10}9  {c |}{col 14}{res}{space 2} .4415513{col 26}{space 2}  .016186{col 37}{space 1}   27.28{col 46}{space 3}0.000{col 67}{space 3} .3332929
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .0547547{col 26}{space 2} .0182048{col 37}{space 1}    3.01{col 46}{space 3}0.003{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetNoDADT.doc
+{txt}{stata `"shellout using `"AlphabetNoDADT.doc"'"':AlphabetNoDADT.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetNoDADT.txt""':seeout}
+
+{com}. 
+. reg ProGay DonoII Party DW OUTLGBT Gender Race i.billDestring if Year <=2018, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,633
+{txt}{hline 13}{c +}{hline 34}   F(10, 1622)     = {res}   340.41
+{txt}       Model {c |} {res} 275.359207        10  27.5359207   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 131.202949     1,622  .080889611   {txt}R-squared       ={res}    0.6773
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.6753
+{txt}       Total {c |} {res} 406.562156     1,632  .249118968   {txt}Root MSE        =   {res} .28441
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      ProGay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}DonoII {c |}{col 14}{res}{space 2} 8.19e-06{col 26}{space 2} 1.42e-06{col 37}{space 1}    5.75{col 46}{space 3}0.000{col 67}{space 3} .0877565
+{txt}{space 7}Party {c |}{col 14}{res}{space 2}  .170734{col 26}{space 2}  .038589{col 37}{space 1}    4.42{col 46}{space 3}0.000{col 67}{space 3} .1704308
+{txt}{space 10}DW {c |}{col 14}{res}{space 2}-.5885523{col 26}{space 2}  .048187{col 37}{space 1}  -12.21{col 46}{space 3}0.000{col 67}{space 3}-.4841089
+{txt}{space 5}OUTLGBT {c |}{col 14}{res}{space 2} .1434777{col 26}{space 2} .0917288{col 37}{space 1}    1.56{col 46}{space 3}0.118{col 67}{space 3}  .022433
+{txt}{space 6}Gender {c |}{col 14}{res}{space 2} .0892411{col 26}{space 2} .0202695{col 37}{space 1}    4.40{col 46}{space 3}0.000{col 67}{space 3} .0644005
+{txt}{space 8}Race {c |}{col 14}{res}{space 2} .0570181{col 26}{space 2} .0229696{col 37}{space 1}    2.48{col 46}{space 3}0.013{col 67}{space 3} .0382532
+{txt}{space 12} {c |}
+billDestring {c |}
+{space 10}3  {c |}{col 14}{res}{space 2} .3706738{col 26}{space 2} .0179812{col 37}{space 1}   20.61{col 46}{space 3}0.000{col 67}{space 3} .3459088
+{txt}{space 10}4  {c |}{col 14}{res}{space 2} .4587304{col 26}{space 2} .0321273{col 37}{space 1}   14.28{col 46}{space 3}0.000{col 67}{space 3} .2141333
+{txt}{space 10}7  {c |}{col 14}{res}{space 2} .3558938{col 26}{space 2} .0189448{col 37}{space 1}   18.79{col 46}{space 3}0.000{col 67}{space 3} .3127231
+{txt}{space 10}8  {c |}{col 14}{res}{space 2} .4470151{col 26}{space 2} .0329751{col 37}{space 1}   13.56{col 46}{space 3}0.000{col 67}{space 3} .2033688
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2} .0783804{col 26}{space 2} .0242683{col 37}{space 1}    3.23{col 46}{space 3}0.001{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetNoDADT.doc
+{txt}{stata `"shellout using `"AlphabetNoDADT.doc"'"':AlphabetNoDADT.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetNoDADT.txt""':seeout}
+
+{com}. 
+. reg ProGay DonoII Party DW OUTLGBT Gender Race i.billDestring if Year >=2018, beta
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}     1,380
+{txt}{hline 13}{c +}{hline 34}   F(8, 1371)      = {res}   925.76
+{txt}       Model {c |} {res} 286.482078         8  35.8102598   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 53.0331393     1,371  .038682086   {txt}R-squared       ={res}    0.8438
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.8429
+{txt}       Total {c |} {res} 339.515217     1,379  .246203928   {txt}Root MSE        =   {res} .19668
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}      ProGay{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 67}        Beta
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 6}DonoII {c |}{col 14}{res}{space 2} 2.01e-07{col 26}{space 2} 6.25e-07{col 37}{space 1}    0.32{col 46}{space 3}0.748{col 67}{space 3} .0043582
+{txt}{space 7}Party {c |}{col 14}{res}{space 2}  .527681{col 26}{space 2} .0359094{col 37}{space 1}   14.69{col 46}{space 3}0.000{col 67}{space 3} .5317245
+{txt}{space 10}DW {c |}{col 14}{res}{space 2}-.4203906{col 26}{space 2} .0394724{col 37}{space 1}  -10.65{col 46}{space 3}0.000{col 67}{space 3}-.3917382
+{txt}{space 5}OUTLGBT {c |}{col 14}{res}{space 2} .0019661{col 26}{space 2}  .045316{col 37}{space 1}    0.04{col 46}{space 3}0.965{col 67}{space 3} .0005685
+{txt}{space 6}Gender {c |}{col 14}{res}{space 2} .0064326{col 26}{space 2} .0125631{col 37}{space 1}    0.51{col 46}{space 3}0.609{col 67}{space 3} .0057836
+{txt}{space 8}Race {c |}{col 14}{res}{space 2}-.0093137{col 26}{space 2} .0134913{col 37}{space 1}   -0.69{col 46}{space 3}0.490{col 67}{space 3}-.0082747
+{txt}{space 12} {c |}
+billDestring {c |}
+{space 10}6  {c |}{col 14}{res}{space 2} .0078403{col 26}{space 2} .0133983{col 37}{space 1}    0.59{col 46}{space 3}0.559{col 67}{space 3} .0073301
+{txt}{space 10}9  {c |}{col 14}{res}{space 2} .1100786{col 26}{space 2} .0128394{col 37}{space 1}    8.57{col 46}{space 3}0.000{col 67}{space 3} .1074613
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}  .270522{col 26}{space 2} .0231249{col 37}{space 1}   11.70{col 46}{space 3}0.000{col 67}{space 3}        .
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. outreg2 using AlphabetNoDADT.doc
+{txt}{stata `"shellout using `"AlphabetNoDADT.doc"'"':AlphabetNoDADT.doc}
+{browse `"C:\Users\rober\OneDrive\Documents"' :dir}{com} : {txt}{stata `"seeout using "AlphabetNoDADT.txt""':seeout}
+
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. clear
+{txt}
+{com}. import excel "C:\Users\rober\OneDrive\Documents\IG_Paper\RD_GIGP.xlsx", firstrow
+{res}{text}(25 vars, 3,562 obs)
+
+{com}. 
+. tab OUTLGBT 
+
+    {txt}OUTLGBT {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          0 {c |}{res}      3,521       98.85       98.85
+{txt}          1 {c |}{res}         41        1.15      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}      3,562      100.00
+{txt}
+{com}. drop if OUTLGBT == 0
+{txt}(3,521 observations deleted)
+
+{com}. tab OUTLGBT
+
+    {txt}OUTLGBT {c |}      Freq.     Percent        Cum.
+{hline 12}{c +}{hline 35}
+          1 {c |}{res}         41      100.00      100.00
+{txt}{hline 12}{c +}{hline 35}
+      Total {c |}{res}         41      100.00
+{txt}
+{com}. tab OUTLGBT Congressperson
+
+           {txt}{c |}                                     Congressperson
+   OUTLGBT {c |}   Baldwin  Cicilline      Craig  Davids ..  Frank (..  Gunderson      Jones  Maloney.. {c |}     Total
+{hline 11}{c +}{hline 88}{c +}{hline 10}
+         1 {c |}{res}         4          3          3          3          4          1          3          3 {txt}{c |}{res}        41 
+{txt}{hline 11}{c +}{hline 88}{c +}{hline 10}
+     Total {c |}{res}         4          3          3          3          4          1          3          3 {txt}{c |}{res}        41 
+
+
+           {txt}{c |}                                     Congressperson
+   OUTLGBT {c |}    Pappas      Pocan  Polis (..     Sinema     Studds     Takano  Torres ..  Torres .. {c |}     Total
+{hline 11}{c +}{hline 88}{c +}{hline 10}
+         1 {c |}{res}         3          3          2          1          2          3          1          2 {txt}{c |}{res}        41 
+{txt}{hline 11}{c +}{hline 88}{c +}{hline 10}
+     Total {c |}{res}         3          3          2          1          2          3          1          2 {txt}{c |}{res}        41 
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. do "C:\Users\rober\AppData\Local\Temp\STD5e78_000000.tmp"
+{txt}
+{com}. clear
+{txt}
+{com}. import excel "C:\Users\rober\OneDrive\Documents\IG_Paper\RD_GIGP.xlsx", firstrow
+{res}{text}(25 vars, 3,562 obs)
+
+{com}. 
+. drop if ProGay == "."
+{txt}(22 observations deleted)
+
+{com}. drop if Party == "."
+{txt}(4 observations deleted)
+
+{com}. 
+. sort Year
+{txt}
+{com}. by Year: summarize DonationsInflation
+
+{txt}{hline}
+-> Year = 1993
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}        507    1807.334    4815.545          0      36630
+
+{txt}{hline}
+-> Year = 1996
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}        508    2129.875    5792.818          0   57175.25
+
+{txt}{hline}
+-> Year = 2009
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}        513    2337.721    5139.233          0   50362.48
+
+{txt}{hline}
+-> Year = 2010
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}        521    2328.281    4984.668          0    46213.2
+
+{txt}{hline}
+-> Year = 2013
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}         96    2643.915    6078.947          0   27757.12
+
+{txt}{hline}
+-> Year = 2021
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}        432    3095.266    10632.88          0     119629
+
+{txt}{hline}
+-> Year = 2022
+
+    Variable {c |}        Obs        Mean    Std. Dev.       Min        Max
+{hline 13}{c +}{hline 57}
+DonationsI~n {c |}{res}        959    3172.894    10747.54          0     119629
+
+{txt}
+{com}. 
+{txt}end of do-file
+
+{com}. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\rober\OneDrive\Documents\AlphabetMafiaLogFileReplication.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}11 Nov 2024, 06:37:09
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}
